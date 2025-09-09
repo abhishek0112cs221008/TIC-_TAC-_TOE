@@ -26,7 +26,7 @@ class DesiTicTacToeApp extends StatelessWidget {
         scaffoldBackgroundColor: Color(0xFF000000),
         fontFamily: 'SF Pro Display',
       ),
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.dark,
       home: TicTacToeGame(),
       debugShowCheckedModeBanner: false,
     );
