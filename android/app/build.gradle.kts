@@ -17,7 +17,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.example.tic_tac_toe"
+    namespace = "com.ek.tic_tac_toe"
     // Set the latest version according to Flutter SDK
     compileSdk = 35
     // Check the Flutter ndk version
@@ -33,8 +33,8 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.tic_tac_toe"
-        minSdk = 21
+        applicationId = "com.ek.tic_tac_toe"
+        minSdk = flutter.minSdkVersion
         targetSdk = 34
         versionCode = 1
         versionName = "0.1.0"
