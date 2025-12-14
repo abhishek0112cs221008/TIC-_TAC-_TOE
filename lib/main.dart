@@ -28,7 +28,7 @@ class DesiTicTacToeApp extends StatelessWidget {
           }
 
           return MaterialApp(
-            title: 'Tic-Tac-Toe',
+            title: 'Tic Tac Toe PRO',
             theme: AppTheme.getTheme(gameProvider.currentTheme, Brightness.light),
             darkTheme: AppTheme.getTheme(gameProvider.currentTheme, Brightness.dark),
             themeMode: themeMode,

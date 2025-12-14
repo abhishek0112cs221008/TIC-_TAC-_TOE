@@ -7,9 +7,11 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../providers/game_provider.dart';
 import '../widgets/game_board.dart';
+import '../widgets/settings_dialog.dart';
 import '../theme/app_theme.dart';
 import '../models/game_mode.dart';
 import '../services/ai_player.dart';
+import '../utils/responsive_helper.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({Key? key}) : super(key: key);
@@ -46,70 +48,90 @@ class _GameScreenState extends State<GameScreen> {
       builder: (BuildContext context) {
         return Dialog(
           backgroundColor: Colors.transparent,
-          child: Container(
-            padding: const EdgeInsets.all(30),
-            decoration: BoxDecoration(
-              color: colors.surface,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: isWin ? colors.accent : colors.primary,
-                width: 2,
-              ),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: ResponsiveHelper.getDialogWidth(context),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (isWin) ...[
-                  Icon(
-                    Icons.emoji_events,
-                    size: 60,
-                    color: colors.accent,
-                  ),
-                  const SizedBox(height: 15),
-                ],
-                Text(
-                  isWin ? 'Victory!' : "Draw!",
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: isWin ? colors.accent : colors.primary,
-                  ),
+            child: Container(
+              padding: ResponsiveHelper.getResponsivePadding(context),
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: isWin ? colors.accent : colors.primary,
+                  width: 2,
                 ),
-                const SizedBox(height: 10),
-                if (isWin) ...[
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (isWin) ...[
+                    Icon(
+                      Icons.emoji_events,
+                      size: ResponsiveHelper.getResponsiveValue(
+                        context,
+                        mobile: 50.0,
+                        tablet: 60.0,
+                        desktop: 70.0,
+                      ),
+                      color: colors.accent,
+                    ),
+                    const SizedBox(height: 15),
+                  ],
                   Text(
-                    'Player $winnerSymbol Wins!',
+                    isWin ? 'Victory!' : "Draw!",
                     style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: winnerSymbol == 'X' ? colors.xColor : colors.oColor,
+                      fontSize: ResponsiveHelper.getResponsiveFontSize(
+                        context,
+                        mobile: 24.0,
+                        tablet: 26.0,
+                        desktop: 28.0,
+                      ),
+                      fontWeight: FontWeight.bold,
+                      color: isWin ? colors.accent : colors.primary,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  if (isWin) ...[
+                    Text(
+                      'Player $winnerSymbol Wins!',
+                      style: TextStyle(
+                        fontSize: ResponsiveHelper.getResponsiveFontSize(
+                          context,
+                          mobile: 16.0,
+                          tablet: 17.0,
+                          desktop: 18.0,
+                        ),
+                        fontWeight: FontWeight.w600,
+                        color: winnerSymbol == 'X' ? colors.xColor : colors.oColor,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 25),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Provider.of<GameProvider>(context, listen: false).resetGame();
+                      _confettiController.stop();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colors.primary,
+                      foregroundColor: colors.background,
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Play Again',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
-                const SizedBox(height: 25),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Provider.of<GameProvider>(context, listen: false).resetGame();
-                    _confettiController.stop();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colors.primary,
-                    foregroundColor: colors.background,
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    'Play Again',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         );
@@ -129,33 +151,42 @@ class _GameScreenState extends State<GameScreen> {
           children: [
             Column(
               children: [
-                const SizedBox(height: 20),
+                SizedBox(height: ResponsiveHelper.getSpacing(context, mobile: 16.0, tablet: 20.0, desktop: 24.0)),
                 // Header with title and theme switcher
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: ResponsiveHelper.getResponsiveHorizontalPadding(context),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Tic Tac Toe',
+                        'Tic Tac Toe PRO',
                         style: TextStyle(
-                          fontSize: 28,
+                          fontSize: ResponsiveHelper.getResponsiveFontSize(
+                            context,
+                            mobile: 24.0,
+                            tablet: 28.0,
+                            desktop: 32.0,
+                          ),
                           fontWeight: FontWeight.bold,
                           color: colors.primary,
                         ),
                       ),
                       IconButton(
-                        icon: Icon(Icons.palette_outlined, color: colors.primary),
+                        icon: Icon(
+                          Icons.palette_outlined,
+                          color: colors.primary,
+                          size: ResponsiveHelper.getResponsiveIconSize(context),
+                        ),
                         onPressed: () => _showThemeSelector(context),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: ResponsiveHelper.getSpacing(context, mobile: 16.0, tablet: 20.0, desktop: 24.0)),
                 // Score Board
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  padding: const EdgeInsets.all(16),
+                  margin: ResponsiveHelper.getResponsiveHorizontalPadding(context),
+                  padding: ResponsiveHelper.getResponsivePadding(context),
                   decoration: BoxDecoration(
                     color: colors.surface,
                     borderRadius: BorderRadius.circular(16),
@@ -183,12 +214,15 @@ class _GameScreenState extends State<GameScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: ResponsiveHelper.getSpacing(context, mobile: 16.0, tablet: 20.0, desktop: 24.0)),
                 // Current Player / AI Thinking
                 if (!gameProvider.gameEnded)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ResponsiveHelper.getSpacing(context, mobile: 16.0, tablet: 20.0, desktop: 24.0),
+                      vertical: ResponsiveHelper.getSpacing(context, mobile: 10.0, tablet: 12.0, desktop: 14.0),
+                    ),
+                    margin: ResponsiveHelper.getResponsiveHorizontalPadding(context),
                     decoration: BoxDecoration(
                       color: colors.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
@@ -233,27 +267,25 @@ class _GameScreenState extends State<GameScreen> {
                       ],
                     ),
                   ),
-                const SizedBox(height: 20),
+                SizedBox(height: ResponsiveHelper.getSpacing(context, mobile: 12.0, tablet: 16.0, desktop: 20.0)),
                 // Game Board
                 Expanded(
-                  child: Center(
-                    child: GameBoard(
-                      onWin: () {
-                        Future.delayed(const Duration(milliseconds: 500), () {
-                          _showGameEndPopup(true, gameProvider.winner);
-                        });
-                      },
-                      onDraw: () {
-                        Future.delayed(const Duration(milliseconds: 500), () {
-                          _showGameEndPopup(false, null);
-                        });
-                      },
-                    ),
+                  child: GameBoard(
+                    onWin: () {
+                      Future.delayed(const Duration(milliseconds: 500), () {
+                        _showGameEndPopup(true, gameProvider.winner);
+                      });
+                    },
+                    onDraw: () {
+                      Future.delayed(const Duration(milliseconds: 500), () {
+                        _showGameEndPopup(false, null);
+                      });
+                    },
                   ),
                 ),
                 // Bottom Controls
                 Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: ResponsiveHelper.getResponsivePadding(context),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -621,142 +653,11 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
+
   void _showSettings(BuildContext context) {
-    final gameProvider = Provider.of<GameProvider>(context, listen: false);
-    final colors = AppTheme.getColors(context);
-
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(30),
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Settings',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: colors.primary,
-                ),
-              ),
-              const SizedBox(height: 20),
-              _buildSettingTile(
-                context,
-                'Sound Effects',
-                'Play sounds during gameplay',
-                Icons.volume_up,
-                gameProvider.isSoundOn,
-                (value) => gameProvider.toggleSound(),
-              ),
-              const SizedBox(height: 12),
-              _buildSettingTile(
-                context,
-                'Haptic Feedback',
-                'Vibrate on moves',
-                Icons.vibration,
-                gameProvider.hapticFeedback,
-                (value) => gameProvider.toggleHaptic(),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton.icon(
-                onPressed: () async {
-                  await gameProvider.resetStats();
-                  if (context.mounted) {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('All stats reset!'),
-                        backgroundColor: colors.primary,
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    );
-                  }
-                },
-                icon: const Icon(Icons.delete_outline),
-                label: const Text('Reset All Stats'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.secondary,
-                  foregroundColor: colors.background,
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildSettingTile(
-    BuildContext context,
-    String title,
-    String subtitle,
-    IconData icon,
-    bool value,
-    Function(bool) onChanged,
-  ) {
-    final colors = AppTheme.getColors(context);
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.background,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: colors.primary.withOpacity(0.2),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: colors.primary, size: 24),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: colors.primary,
-                  ),
-                ),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: colors.primary.withOpacity(0.6),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Switch(
-            value: value,
-            onChanged: onChanged,
-            activeColor: colors.accent,
-          ),
-        ],
-      ),
+      builder: (context) => const SettingsDialog(),
     );
   }
 }
