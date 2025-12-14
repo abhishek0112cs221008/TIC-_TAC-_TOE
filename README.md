@@ -337,7 +337,10 @@ dependencies:
 
 <div align="center">
 
-> 📷 *Screenshots coming soon! Star the repo to stay updated.*
+<img src="assets/output/one.jpg" width="200" alt="Screenshot 1"> &nbsp;&nbsp;
+<img src="assets/output/two.jpg" width="200" alt="Screenshot 2"> &nbsp;&nbsp;
+<img src="assets/output/three.jpg" width="200" alt="Screenshot 3"> &nbsp;&nbsp;
+<img src="assets/output/four.jpg" width="200" alt="Screenshot 4">
 
 </div>
 
