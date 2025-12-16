@@ -57,19 +57,12 @@ class CompactControls extends StatelessWidget {
         decoration: BoxDecoration(
           color: color.withOpacity(0.15),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: color.withOpacity(0.3),
-            width: 1,
-          ),
+          border: Border.all(color: color.withOpacity(0.3), width: 1),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              color: color,
-              size: 24,
-            ),
+            Icon(icon, color: color, size: 24),
             const SizedBox(height: 4),
             Text(
               label,
@@ -134,31 +127,66 @@ class CompactControls extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 30),
-              _buildThemeCard(
-                context,
-                AppThemeType.pureBlack,
-                'Pure Black',
-                const Color(0xFF000000),
-                const Color(0xFF00D856),
-                Icons.dark_mode,
-              ),
-              const SizedBox(height: 15),
-              _buildThemeCard(
-                context,
-                AppThemeType.pureWhite,
-                'Pure White',
-                const Color(0xFFFFFFFF),
-                const Color(0xFFFF5A5F),
-                Icons.light_mode,
-              ),
-              const SizedBox(height: 15),
-              _buildThemeCard(
-                context,
-                AppThemeType.airbnbUpi,
-                'Airbnb + UPI',
-                const Color(0xFFFF5A5F),
-                const Color(0xFF00D856),
-                Icons.auto_awesome,
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  children: [
+                    _buildThemeCard(
+                      context,
+                      AppThemeType.pureBlack,
+                      'Pure Black',
+                      Colors.black,
+                      Icons.dark_mode,
+                      isSelected:
+                          gameProvider.currentTheme == AppThemeType.pureBlack,
+                    ),
+                    const SizedBox(width: 15),
+                    _buildThemeCard(
+                      context,
+                      AppThemeType.pureWhite,
+                      'Pure White',
+                      Colors.white,
+                      Icons.light_mode,
+                      isSelected:
+                          gameProvider.currentTheme == AppThemeType.pureWhite,
+                      isLight: true,
+                    ),
+                    const SizedBox(width: 15),
+                    _buildThemeCard(
+                      context,
+                      AppThemeType.glassGreen,
+                      'Glass Green',
+                      const Color(0xFF1C2A25),
+                      Icons.blur_on,
+                      accentColor: const Color(0xFF2ED573),
+                      isSelected:
+                          gameProvider.currentTheme == AppThemeType.glassGreen,
+                    ),
+                    const SizedBox(width: 15),
+                    _buildThemeCard(
+                      context,
+                      AppThemeType.glassRed,
+                      'Glass Red',
+                      const Color(0xFF2A1C1C),
+                      Icons.blur_on,
+                      accentColor: const Color(0xFFFF5A5F),
+                      isSelected:
+                          gameProvider.currentTheme == AppThemeType.glassRed,
+                    ),
+                    const SizedBox(width: 15),
+                    _buildThemeCard(
+                      context,
+                      AppThemeType.blackRed,
+                      'Black Red',
+                      Colors.black,
+                      Icons.palette,
+                      accentColor: const Color(0xFFFF5A5F),
+                      isSelected:
+                          gameProvider.currentTheme == AppThemeType.blackRed,
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 20),
             ],
@@ -170,77 +198,73 @@ class CompactControls extends StatelessWidget {
 
   Widget _buildThemeCard(
     BuildContext context,
-    AppThemeType type,
+    AppThemeType theme,
     String label,
-    Color color1,
-    Color color2,
-    IconData icon,
-  ) {
-    final gameProvider = Provider.of<GameProvider>(context);
-    final isSelected = gameProvider.currentTheme == type;
+    Color color,
+    IconData icon, {
+    bool isSelected = false,
+    bool isLight = false,
+    Color? accentColor,
+  }) {
+    final colors = AppTheme.getColors(context);
 
     return GestureDetector(
       onTap: () {
-        gameProvider.setTheme(type);
+        Provider.of<GameProvider>(context, listen: false).setTheme(theme);
         Navigator.pop(context);
       },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: [color1, color2],
-          ),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected ? Colors.white : Colors.white.withOpacity(0.3),
-            width: isSelected ? 3 : 1,
-          ),
-          boxShadow: [
-            if (isSelected)
-              BoxShadow(
-                color: color1.withOpacity(0.5),
-                blurRadius: 15,
-                spreadRadius: 2,
-              ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: Colors.white, size: 40),
-            const SizedBox(width: 20),
-            Expanded(
-              child: Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+      child: Column(
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(20),
+              border:
+                  isSelected
+                      ? Border.all(color: colors.accent, width: 3)
+                      : Border.all(
+                        color: colors.primary.withOpacity(0.1),
+                        width: 1,
+                      ),
+              boxShadow: [
+                if (isSelected)
+                  BoxShadow(
+                    color: (accentColor ?? color).withOpacity(0.4),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+              ],
+            ),
+            child: Center(
+              child: Icon(
+                icon,
+                color: isLight ? Colors.black : Colors.white,
+                size: 32,
               ),
             ),
-            if (isSelected)
-              const Icon(Icons.check_circle, color: Colors.white, size: 28),
-          ],
-        ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+              color: colors.primary,
+            ),
+          ),
+        ],
       ),
     );
   }
 
   void _showGameModeSelector(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => const GameModeDialog(),
-    );
+    showDialog(context: context, builder: (context) => const GameModeDialog());
   }
 
   void _showSettings(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => const SettingsDialog(),
-    );
+    showDialog(context: context, builder: (context) => const SettingsDialog());
   }
 }
 
@@ -266,10 +290,7 @@ class GameModeDialog extends StatelessWidget {
             ],
           ),
           borderRadius: BorderRadius.circular(30),
-          border: Border.all(
-            color: colors.primary.withOpacity(0.3),
-            width: 2,
-          ),
+          border: Border.all(color: colors.primary.withOpacity(0.3), width: 2),
         ),
         child: const GameModeSelector(),
       ),

@@ -175,6 +175,14 @@ class ThemeSelector extends StatelessWidget {
                           const Color(0xFFFF9F0A),
                           Icons.phone_iphone,
                         ),
+                        _buildThemeCard(
+                          context,
+                          AppThemeType.glassGreen,
+                          'Glass Green',
+                          const Color(0xFF2ED573),
+                          const Color(0xFF0B1412),
+                          Icons.blur_on,
+                        ),
                       ],
                     ),
                   ),
@@ -231,11 +239,7 @@ class ThemeSelector extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 32,
-            ),
+            Icon(icon, color: Colors.white, size: 32),
             const SizedBox(height: 8),
             Text(
               label,
@@ -249,11 +253,7 @@ class ThemeSelector extends StatelessWidget {
             if (isSelected)
               const Padding(
                 padding: EdgeInsets.only(top: 4),
-                child: Icon(
-                  Icons.check_circle,
-                  color: Colors.white,
-                  size: 16,
-                ),
+                child: Icon(Icons.check_circle, color: Colors.white, size: 16),
               ),
           ],
         ),
@@ -267,12 +267,17 @@ class ThemeSelector extends StatelessWidget {
     final colors = AppTheme.getColors(context);
 
     // Get current theme name
-    String currentThemeName = gameProvider.currentTheme.toString().split('.').last;
-    currentThemeName = currentThemeName[0].toUpperCase() + 
-        currentThemeName.substring(1).replaceAllMapped(
-          RegExp(r'([A-Z])'),
-          (match) => ' ${match.group(0)}',
-        ).trim();
+    String currentThemeName =
+        gameProvider.currentTheme.toString().split('.').last;
+    currentThemeName =
+        currentThemeName[0].toUpperCase() +
+        currentThemeName
+            .substring(1)
+            .replaceAllMapped(
+              RegExp(r'([A-Z])'),
+              (match) => ' ${match.group(0)}',
+            )
+            .trim();
 
     return GestureDetector(
       onTap: () => _showThemeBottomSheet(context),
@@ -296,11 +301,7 @@ class ThemeSelector extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.palette,
-              color: colors.primary,
-              size: 16,
-            ),
+            Icon(Icons.palette, color: colors.primary, size: 16),
             const SizedBox(width: 8),
             Text(
               currentThemeName,
@@ -311,11 +312,7 @@ class ThemeSelector extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 4),
-            Icon(
-              Icons.arrow_drop_down,
-              color: colors.primary,
-              size: 18,
-            ),
+            Icon(Icons.arrow_drop_down, color: colors.primary, size: 18),
           ],
         ),
       ),

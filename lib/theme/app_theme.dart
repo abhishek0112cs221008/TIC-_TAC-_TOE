@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-enum AppThemeType { 
+enum AppThemeType {
   system,
   pureBlack,
   pureWhite,
-  airbnbUpi
+  glassGreen,
+  glassRed,
+  blackRed,
 }
 
 class AppTheme {
@@ -46,24 +48,49 @@ class AppTheme {
       gradientStart: Color(0xFFFFFFFF),
       gradientEnd: Color(0xFFFFFFFF),
     ),
-    // Airbnb Red + UPI Green Theme
-    AppThemeType.airbnbUpi: ThemeColors(
-      primary: Color(0xFFFF5A5F), // Airbnb Red
-      secondary: Color(0xFF00D856), // UPI Green
-      accent: Color(0xFFFFFFFF),
-      background: Color(0xFF000000),
-      surface: Color(0xFF1A1A1A),
-      xColor: Color(0xFFFF5A5F),
-      oColor: Color(0xFF00D856),
+
+    // Modern Dark Glassmorphism Theme
+    AppThemeType.glassGreen: ThemeColors(
+      primary: Color(0xFFFFFFFF), // White Text
+      secondary: Color(0xFF69F0AE), // Light Neon Green for controls
+      accent: Color(0xFF2ED573), // Neon Green
+      background: Color(0xFF0B1412), // Dark Green-Black
+      surface: Color(0xFF1C2A25), // Darker surface, not white
+      xColor: Color(0xFFFFFFFF), // White X
+      oColor: Color(0xFF2ED573), // Neon Green O
+      gradientStart: Color(0xFF0B1412),
+      gradientEnd: Color(0xFF0F1C18),
+    ),
+    // Modern Dark Glassmorphism Theme (Red)
+    AppThemeType.glassRed: ThemeColors(
+      primary: Color(0xFFFFFFFF),
+      secondary: Color(0xFFFF8A8F), // Lighter Red for controls
+      accent: Color(0xFFFF5A5F), // Airbnb Red
+      background: Color(0xFF140505), // Dark Red-Black
+      surface: Color(0xFF2A1C1C), // Darker red surface
+      xColor: Color(0xFFFFFFFF),
+      oColor: Color(0xFFFF5A5F),
+      gradientStart: Color(0xFF140505),
+      gradientEnd: Color(0xFF1F0A0A),
+    ),
+    // Black Red (Full) Theme
+    AppThemeType.blackRed: ThemeColors(
+      primary: Color(0xFFFFFFFF),
+      secondary: Color(0xFFE0E0E0),
+      accent: Color(0xFFFF5A5F), // Red Accent
+      background: Color(0xFF000000), // Pure Black
+      surface: Color(0xFF121212), // Dark Surface
+      xColor: Color(0xFFFFFFFF),
+      oColor: Color(0xFFFF5A5F),
       gradientStart: Color(0xFF000000),
-      gradientEnd: Color(0xFF1A1A1A),
+      gradientEnd: Color(0xFF000000),
     ),
   };
 
   static ThemeData getTheme(AppThemeType type, [Brightness? brightness]) {
     ThemeColors colors;
     Brightness themeBrightness;
-    
+
     // Handle system theme with light/dark variants
     if (type == AppThemeType.system) {
       themeBrightness = brightness ?? Brightness.dark;
@@ -103,15 +130,15 @@ class AppTheme {
         themeBrightness = Brightness.dark;
       }
     }
-    
+
     return ThemeData(
       brightness: themeBrightness,
       primaryColor: colors.primary,
       scaffoldBackgroundColor: colors.background,
       textTheme: GoogleFonts.poppinsTextTheme(
-        themeBrightness == Brightness.dark 
-            ? ThemeData.dark().textTheme 
-            : ThemeData.light().textTheme
+        themeBrightness == Brightness.dark
+            ? ThemeData.dark().textTheme
+            : ThemeData.light().textTheme,
       ),
       useMaterial3: true,
       extensions: [colors],

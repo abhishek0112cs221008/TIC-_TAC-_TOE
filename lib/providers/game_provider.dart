@@ -14,7 +14,7 @@ class GameProvider extends ChangeNotifier {
   List<int> _winningLine = [];
   bool _isSoundOn = true;
   bool _hapticFeedback = true;
-  AppThemeType _currentTheme = AppThemeType.system;
+  AppThemeType _currentTheme = AppThemeType.glassGreen;
   GameStats _stats = GameStats();
   GameMode _gameMode = GameMode.vsPlayer;
   AIDifficulty _aiDifficulty = AIDifficulty.medium;
@@ -110,15 +110,19 @@ class GameProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> makeMove(int index, VoidCallback onWin, VoidCallback onDraw) async {
+  Future<void> makeMove(
+    int index,
+    VoidCallback onWin,
+    VoidCallback onDraw,
+  ) async {
     if (_board[index] != '' || _gameEnded || _isAIThinking) return;
 
     _board[index] = _currentPlayer;
     _playMoveSound();
-    
+
     // Check for winner
     String? gameWinner = _checkWinner();
-    
+
     if (gameWinner != null) {
       _winner = gameWinner;
       _gameEnded = true;
@@ -133,7 +137,7 @@ class GameProvider extends ChangeNotifier {
       onDraw();
     } else {
       _currentPlayer = _currentPlayer == 'X' ? 'O' : 'X';
-      
+
       // If AI mode and it's AI's turn
       if (_gameMode == GameMode.vsAI && _currentPlayer == 'O') {
         notifyListeners();
@@ -141,7 +145,7 @@ class GameProvider extends ChangeNotifier {
         return;
       }
     }
-    
+
     notifyListeners();
   }
 
@@ -157,7 +161,7 @@ class GameProvider extends ChangeNotifier {
     _playMoveSound();
 
     String? gameWinner = _checkWinner();
-    
+
     if (gameWinner != null) {
       _winner = gameWinner;
       _gameEnded = true;
@@ -183,9 +187,14 @@ class GameProvider extends ChangeNotifier {
 
   String? _checkWinner() {
     List<List<int>> winPatterns = [
-      [0, 1, 2], [3, 4, 5], [6, 7, 8],
-      [0, 3, 6], [1, 4, 7], [2, 5, 8],
-      [0, 4, 8], [2, 4, 6],
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
     ];
 
     for (List<int> pattern in winPatterns) {

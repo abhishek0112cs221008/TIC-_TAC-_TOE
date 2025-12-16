@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/game_provider.dart';
 import '../theme/app_theme.dart';
 import '../utils/responsive_helper.dart';
+import 'glass_container.dart';
 import 'privacy_policy_dialog.dart';
 import 'about_dialog.dart' as about;
 
@@ -21,130 +22,257 @@ class SettingsDialog extends StatelessWidget {
           maxWidth: ResponsiveHelper.getDialogWidth(context),
           maxHeight: ResponsiveHelper.getDialogMaxHeight(context),
         ),
-        child: Container(
-          padding: ResponsiveHelper.getResponsivePadding(context),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                colors.surface.withOpacity(0.95),
-                colors.surface.withOpacity(0.85),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(
-              color: colors.primary.withOpacity(0.3),
-              width: 2,
-            ),
-          ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Settings',
-                    style: TextStyle(
-                      fontSize: ResponsiveHelper.getResponsiveFontSize(
-                        context,
-                        mobile: 24.0,
-                        tablet: 26.0,
-                        desktop: 28.0,
-                      ),
-                      fontWeight: FontWeight.bold,
-                      color: colors.primary,
+        child:
+            (gameProvider.currentTheme == AppThemeType.glassGreen ||
+                    gameProvider.currentTheme == AppThemeType.glassRed)
+                ? GlassContainer(
+                  blur: 20,
+                  opacity: 0.2, // Increase opacity
+                  color: Colors.black, // Dark glass for better contrast
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.1),
+                    width: 1,
+                  ),
+                  padding: ResponsiveHelper.getResponsivePadding(context),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Settings',
+                              style: TextStyle(
+                                fontSize:
+                                    ResponsiveHelper.getResponsiveFontSize(
+                                      context,
+                                      mobile: 24.0,
+                                      tablet: 26.0,
+                                      desktop: 28.0,
+                                    ),
+                                fontWeight: FontWeight.bold,
+                                color: colors.primary,
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.close, color: colors.primary),
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        _buildSettingTile(
+                          context,
+                          'Sound Effects',
+                          'Play sounds during gameplay',
+                          Icons.volume_up,
+                          gameProvider.isSoundOn,
+                          (value) => gameProvider.toggleSound(),
+                          colors,
+                        ),
+                        const SizedBox(height: 15),
+                        _buildSettingTile(
+                          context,
+                          'Haptic Feedback',
+                          'Vibrate on moves',
+                          Icons.vibration,
+                          gameProvider.hapticFeedback,
+                          (value) => gameProvider.toggleHaptic(),
+                          colors,
+                        ),
+                        const SizedBox(height: 15),
+                        _buildNavigationTile(
+                          context,
+                          'Privacy Policy',
+                          'View our privacy policy',
+                          Icons.mail,
+                          colors,
+                          () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => const PrivacyPolicyDialog(),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 15),
+                        _buildNavigationTile(
+                          context,
+                          'About',
+                          'App information',
+                          Icons.info,
+                          colors,
+                          () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => const about.AboutDialog(),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 30),
+                        ElevatedButton.icon(
+                          onPressed: () async {
+                            await gameProvider.resetStats();
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: const Text('All stats reset!'),
+                                  backgroundColor: colors.primary,
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.delete_outline),
+                          label: const Text('Reset All Stats'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: colors.secondary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 30,
+                              vertical: 16,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  IconButton(
-                    icon: Icon(Icons.close, color: colors.primary),
-                    onPressed: () => Navigator.pop(context),
+                )
+                : Container(
+                  padding: ResponsiveHelper.getResponsivePadding(context),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        colors.surface.withOpacity(0.95),
+                        colors.surface.withOpacity(0.85),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(
+                      color: colors.primary.withOpacity(0.3),
+                      width: 2,
+                    ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              _buildSettingTile(
-                context,
-                'Sound Effects',
-                'Play sounds during gameplay',
-                Icons.volume_up,
-                gameProvider.isSoundOn,
-                (value) => gameProvider.toggleSound(),
-                colors,
-              ),
-              const SizedBox(height: 15),
-              _buildSettingTile(
-                context,
-                'Haptic Feedback',
-                'Vibrate on moves',
-                Icons.vibration,
-                gameProvider.hapticFeedback,
-                (value) => gameProvider.toggleHaptic(),
-                colors,
-              ),
-              const SizedBox(height: 15),
-              _buildNavigationTile(
-                context,
-                'Privacy Policy',
-                'View our privacy policy',
-                Icons.mail,
-                colors,
-                () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => const PrivacyPolicyDialog(),
-                  );
-                },
-              ),
-              const SizedBox(height: 15),
-              _buildNavigationTile(
-                context,
-                'About',
-                'App information',
-                Icons.info,
-                colors,
-                () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => const about.AboutDialog(),
-                  );
-                },
-              ),
-              const SizedBox(height: 30),
-              ElevatedButton.icon(
-                onPressed: () async {
-                  await gameProvider.resetStats();
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('All stats reset!'),
-                        backgroundColor: colors.primary,
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Settings',
+                              style: TextStyle(
+                                fontSize:
+                                    ResponsiveHelper.getResponsiveFontSize(
+                                      context,
+                                      mobile: 24.0,
+                                      tablet: 26.0,
+                                      desktop: 28.0,
+                                    ),
+                                fontWeight: FontWeight.bold,
+                                color: colors.primary,
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.close, color: colors.primary),
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                          ],
                         ),
-                      ),
-                    );
-                  }
-                },
-                icon: const Icon(Icons.delete_outline),
-                label: const Text('Reset All Stats'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.secondary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                        const SizedBox(height: 20),
+                        _buildSettingTile(
+                          context,
+                          'Sound Effects',
+                          'Play sounds during gameplay',
+                          Icons.volume_up,
+                          gameProvider.isSoundOn,
+                          (value) => gameProvider.toggleSound(),
+                          colors,
+                        ),
+                        const SizedBox(height: 15),
+                        _buildSettingTile(
+                          context,
+                          'Haptic Feedback',
+                          'Vibrate on moves',
+                          Icons.vibration,
+                          gameProvider.hapticFeedback,
+                          (value) => gameProvider.toggleHaptic(),
+                          colors,
+                        ),
+                        const SizedBox(height: 15),
+                        _buildNavigationTile(
+                          context,
+                          'Privacy Policy',
+                          'View our privacy policy',
+                          Icons.mail,
+                          colors,
+                          () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => const PrivacyPolicyDialog(),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 15),
+                        _buildNavigationTile(
+                          context,
+                          'About',
+                          'App information',
+                          Icons.info,
+                          colors,
+                          () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => const about.AboutDialog(),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 30),
+                        ElevatedButton.icon(
+                          onPressed: () async {
+                            await gameProvider.resetStats();
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: const Text('All stats reset!'),
+                                  backgroundColor: colors.primary,
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.delete_outline),
+                          label: const Text('Reset All Stats'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: colors.secondary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 30,
+                              vertical: 16,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
       ),
-    ),
     );
   }
 
@@ -160,20 +288,19 @@ class SettingsDialog extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: colors.surface.withOpacity(0.3),
+        color: colors.surface.withOpacity(
+          0.3,
+        ), // This might still be an issue for light mode if surface is white.
+        // For light mode (Pure White), surface is F5F5F5. Opacity 0.3 makes it transparent.
+        // We probably want solid color for non-glass themes.
+        // But the previous implementation used `colors.surface.withOpacity(0.3)`.
+        // The issue is TEXT color.
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(
-          color: colors.primary.withOpacity(0.2),
-          width: 1,
-        ),
+        border: Border.all(color: colors.primary.withOpacity(0.2), width: 1),
       ),
       child: Row(
         children: [
-          Icon(
-            icon,
-            color: colors.primary,
-            size: 28,
-          ),
+          Icon(icon, color: colors.primary, size: 28),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -184,14 +311,16 @@ class SettingsDialog extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: colors.primary, // CHANGED from Colors.white
                   ),
                 ),
                 Text(
                   subtitle,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.white.withOpacity(0.6),
+                    color: colors.primary.withOpacity(
+                      0.6,
+                    ), // CHANGED from Colors.white
                   ),
                 ),
               ],
@@ -223,18 +352,11 @@ class SettingsDialog extends StatelessWidget {
         decoration: BoxDecoration(
           color: colors.surface.withOpacity(0.3),
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(
-            color: colors.primary.withOpacity(0.2),
-            width: 1,
-          ),
+          border: Border.all(color: colors.primary.withOpacity(0.2), width: 1),
         ),
         child: Row(
           children: [
-            Icon(
-              icon,
-              color: colors.primary,
-              size: 24,
-            ),
+            Icon(icon, color: colors.primary, size: 24),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -245,14 +367,16 @@ class SettingsDialog extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: colors.primary, // CHANGED from Colors.white
                     ),
                   ),
                   Text(
                     subtitle,
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.white.withOpacity(0.6),
+                      color: colors.primary.withOpacity(
+                        0.6,
+                      ), // CHANGED from Colors.white
                     ),
                   ),
                 ],
